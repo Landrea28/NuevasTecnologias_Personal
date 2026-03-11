@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!-- Sitio web de gestión de proyectos y tareas -->
+<html lang="es">
+  <head>
+    <!-- Metadatos del documento -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GestorPro &mdash; Gestión de Proyectos y Tareas</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <!-- ========== CABECERA PRINCIPAL ========== -->
+    <header class="header">
+      <div class="header__brand">
+        <!-- Logo / nombre de la aplicación -->
+        <span class="header__icon">&#9783;</span>
+        <h1 class="header__title">GestorPro</h1>
+      </div>
+      <nav class="header__nav">
+        <button id="btnDashboard" class="nav-btn nav-btn--active" title="Ir al panel principal">
+          &#8962; Proyectos
+        </button>
+      </nav>
+    </header>
+
+    <!-- ========== CONTENIDO PRINCIPAL ========== -->
+    <main class="main">
+
+      <!-- ---- VISTA: DASHBOARD (lista de proyectos) ---- -->
+      <section id="viewDashboard" class="view view--active">
+        <div class="view__header">
+          <h2 class="view__title">Mis Proyectos</h2>
+          <!-- Botón para abrir el modal de creación de proyecto -->
+          <button id="btnNewProject" class="btn btn--primary">
+            &#43; Nuevo Proyecto
+          </button>
+        </div>
+
+        <!-- Barra de búsqueda de proyectos -->
+        <div class="search-bar">
+          <input
+            type="text"
+            id="searchProjects"
+            class="search-bar__input"
+            placeholder="&#128269; Buscar proyectos..."
+          />
+        </div>
+
+        <!-- Contenedor de tarjetas de proyectos -->
+        <div id="projectsGrid" class="projects-grid">
+          <!-- Las tarjetas se generan dinámicamente con JS -->
+        </div>
+
+        <!-- Mensaje cuando no hay proyectos -->
+        <div id="emptyProjects" class="empty-state empty-state--hidden">
+          <span class="empty-state__icon">&#128193;</span>
+          <p class="empty-state__text">No hay proyectos todavía.</p>
+          <p class="empty-state__sub">¡Crea tu primer proyecto con el botón de arriba! "+Nuevo Proyecto"</p>
+        </div>
+      </section>
+
+      <!-- ---- VISTA: DETALLE DEL PROYECTO ---- -->
+      <section id="viewProject" class="view">
+        <!-- Encabezado del proyecto con botón para volver -->
+        <div class="view__header">
+          <button id="btnBack" class="btn btn--ghost">&#8592; Volver</button>
+          <div class="project-meta">
+            <h2 id="projectDetailTitle" class="view__title"></h2>
+            <span id="projectDetailBadge" class="badge"></span>
+          </div>
+          <div class="view__actions">
+            <button id="btnEditProject" class="btn btn--secondary">&#9998; Editar</button>
+            <button id="btnDeleteProject" class="btn btn--danger">&#128465; Eliminar</button>
+          </div>
+        </div>
+
+        <!-- Descripción del proyecto -->
+        <p id="projectDetailDesc" class="project-description"></p>
+
+        <!-- Pestañas: Miembros / Tareas -->
+        <div class="tabs">
+          <button class="tab tab--active" data-tab="members">
+            &#128101; Miembros
+          </button>
+          <button class="tab" data-tab="tasks">
+            &#10003; Tareas
+          </button>
+        </div>
+
+        <!-- Panel: Miembros -->
+        <div id="tabMembers" class="tab-panel tab-panel--active">
+          <div class="tab-panel__header">
+            <h3 class="tab-panel__title">Miembros del Proyecto</h3>
+            <button id="btnAddMember" class="btn btn--primary btn--sm">
+              &#43; Agregar Miembro
+            </button>
+          </div>
+          <!-- Lista de miembros del proyecto -->
+          <ul id="membersList" class="members-list"></ul>
+          <div id="emptyMembers" class="empty-state empty-state--sm empty-state--hidden">
+            <p>No hay miembros asignados. Agrega uno para poder asignar tareas.</p>
+          </div>
+        </div>
+
+        <!-- Panel: Tareas -->
+        <div id="tabTasks" class="tab-panel">
+          <div class="tab-panel__header">
+            <h3 class="tab-panel__title">Tareas</h3>
+            <button id="btnAddTask" class="btn btn--primary btn--sm">
+              &#43; Nueva Tarea
+            </button>
+          </div>
+
+          <!-- Filtros de estado de tarea -->
+          <div class="task-filters">
+            <button class="filter-btn filter-btn--active" data-filter="all">Todas</button>
+            <button class="filter-btn" data-filter="pending">Pendiente</button>
+            <button class="filter-btn" data-filter="inprogress">En Progreso</button>
+            <button class="filter-btn" data-filter="done">Completada</button>
+          </div>
+
+          <!-- Columnas Kanban de tareas -->
+          <div class="kanban">
+            <div class="kanban__col" data-status="pending">
+              <div class="kanban__col-header kanban__col-header--pending">
+                <span>&#9679; Pendiente</span>
+                <span id="countPending" class="kanban__count">0</span>
+              </div>
+              <div id="tasksPending" class="kanban__tasks"></div>
+            </div>
+            <div class="kanban__col" data-status="inprogress">
+              <div class="kanban__col-header kanban__col-header--inprogress">
+                <span>&#9679; En Progreso</span>
+                <span id="countInprogress" class="kanban__count">0</span>
+              </div>
+              <div id="tasksInprogress" class="kanban__tasks"></div>
+            </div>
+            <div class="kanban__col" data-status="done">
+              <div class="kanban__col-header kanban__col-header--done">
+                <span>&#9679; Completada</span>
+                <span id="countDone" class="kanban__count">0</span>
+              </div>
+              <div id="tasksDone" class="kanban__tasks"></div>
+            </div>
+          </div>
+
+          <div id="emptyTasks" class="empty-state empty-state--sm empty-state--hidden">
+            <p>No hay tareas en esta vista. ¡Crea una nueva tarea!</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ========== MODALES ========== -->
+
+    <!-- Modal: Crear / Editar Proyecto -->
+    <div id="modalProject" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalProjectTitle">
+      <div class="modal__backdrop"></div>
+      <div class="modal__box">
+        <div class="modal__header">
+          <h3 id="modalProjectTitle" class="modal__title">Nuevo Proyecto</h3>
+          <button class="modal__close" data-close="modalProject" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <!-- Formulario del proyecto -->
+          <form id="formProject" novalidate>
+            <div class="form-group">
+              <label for="inputProjectName">Nombre del proyecto <span class="required">*</span></label>
+              <input
+                type="text"
+                id="inputProjectName"
+                class="form-control"
+                placeholder="Ej. Rediseño de portal web"
+                maxlength="60"
+                required
+              />
+              <span class="field-error" id="errProjectName"></span>
+            </div>
+            <div class="form-group">
+              <label for="inputProjectDesc">Descripción</label>
+              <textarea
+                id="inputProjectDesc"
+                class="form-control"
+                rows="3"
+                placeholder="Describe brevemente el objetivo del proyecto..."
+                maxlength="200"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="inputProjectStatus">Estado</label>
+              <select id="inputProjectStatus" class="form-control">
+                <option value="active">Activo</option>
+                <option value="paused">Pausado</option>
+                <option value="finished">Finalizado</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputProjectColor">Color del proyecto</label>
+              <div class="color-picker" id="colorPicker">
+                <!-- Los colores -->
+              </div>
+              <input type="hidden" id="inputProjectColor" value="#4f46e5" />
+            </div>
+          </form>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-close="modalProject">Cancelar</button>
+          <button type="button" id="btnSaveProject" class="btn btn--primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Agregar Miembro -->
+    <div id="modalMember" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalMemberTitle">
+      <div class="modal__backdrop"></div>
+      <div class="modal__box modal__box--sm">
+        <div class="modal__header">
+          <h3 id="modalMemberTitle" class="modal__title">Agregar Miembro</h3>
+          <button class="modal__close" data-close="modalMember" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <form id="formMember" novalidate>
+            <div class="form-group">
+              <label for="inputMemberName">Nombre completo <span class="required">*</span></label>
+              <input
+                type="text"
+                id="inputMemberName"
+                class="form-control"
+                placeholder="Ej. Ana García"
+                maxlength="50"
+                required
+              />
+              <span class="field-error" id="errMemberName"></span>
+            </div>
+            <div class="form-group">
+              <label for="inputMemberRole">Rol</label>
+              <input
+                type="text"
+                id="inputMemberRole"
+                class="form-control"
+                placeholder="Ej. Desarrollador Frontend"
+                maxlength="50"
+              />
+            </div>
+          </form>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-close="modalMember">Cancelar</button>
+          <button type="button" id="btnSaveMember" class="btn btn--primary">Agregar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Crear / Editar Tarea -->
+    <div id="modalTask" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTaskTitle">
+      <div class="modal__backdrop"></div>
+      <div class="modal__box">
+        <div class="modal__header">
+          <h3 id="modalTaskTitle" class="modal__title">Nueva Tarea</h3>
+          <button class="modal__close" data-close="modalTask" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <form id="formTask" novalidate>
+            <div class="form-group">
+              <label for="inputTaskName">Nombre de la tarea <span class="required">*</span></label>
+              <input
+                type="text"
+                id="inputTaskName"
+                class="form-control"
+                placeholder="Ej. Diseñar mockup de pantalla principal"
+                maxlength="80"
+                required
+              />
+              <span class="field-error" id="errTaskName"></span>
+            </div>
+            <div class="form-group">
+              <label for="inputTaskDesc">Descripción</label>
+              <textarea
+                id="inputTaskDesc"
+                class="form-control"
+                rows="2"
+                placeholder="Detalla qué hay que hacer..."
+                maxlength="300"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="inputTaskStatus">Estado</label>
+                <select id="inputTaskStatus" class="form-control">
+                  <option value="pending">Pendiente</option>
+                  <option value="inprogress">En Progreso</option>
+                  <option value="done">Completada</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="inputTaskPriority">Prioridad</label>
+                <select id="inputTaskPriority" class="form-control">
+                  <option value="low">Baja</option>
+                  <option value="medium" selected>Media</option>
+                  <option value="high">Alta</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="inputTaskAssignee">Responsable</label>
+                <select id="inputTaskAssignee" class="form-control">
+                  <option value="">Sin asignar</option>
+                  <!-- Opciones generadas dinámicamente -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="inputTaskDue">Fecha límite</label>
+                <input type="date" id="inputTaskDue" class="form-control" />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-close="modalTask">Cancelar</button>
+          <button type="button" id="btnSaveTask" class="btn btn--primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Confirmación de eliminación -->
+    <div id="modalConfirm" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalConfirmTitle">
+      <div class="modal__backdrop"></div>
+      <div class="modal__box modal__box--xs">
+        <div class="modal__header">
+          <h3 id="modalConfirmTitle" class="modal__title">Confirmar eliminación</h3>
+          <button class="modal__close" data-close="modalConfirm" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p id="modalConfirmText" class="confirm-text"></p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--ghost" data-close="modalConfirm">Cancelar</button>
+          <button type="button" id="btnConfirmDelete" class="btn btn--danger">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast / notificación flotante -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Script principal de la aplicación -->
+    <script src="app.js"></script>
+  </body>
+</html>
