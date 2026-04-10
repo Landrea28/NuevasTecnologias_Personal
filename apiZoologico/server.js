@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express"); 
 const mongoose = require("mongoose"); 
 const cors = require("cors"); 
+const authRoutes = require("./routers/authentication");
  
 const app = express(); 
  
@@ -17,6 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
  
 // Rutas 
 app.use("/api/animals", require("./routes/animalRoutes")); 
+app.use("/api", authRoutes)
  
 // Ruta base 
 app.get("/", (req, res) => { 
